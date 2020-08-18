@@ -2,8 +2,8 @@ import axios from 'axios'
 
 export const fetchShow = () => {
 
-    axios
+    return axios
         .get(
           "https://api.tvmaze.com/singlesearch/shows?q=stranger-things&embed=episodes")
-        // .then(res => { return res })
+        .then(res => { return res })
 }

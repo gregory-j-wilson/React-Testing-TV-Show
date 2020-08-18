@@ -1,8 +1,10 @@
 import React from 'react'
-import {findByTestId, render, screen, waitFor, fireEvent} from '@testing-library/react'
+import {findByTestId, render, screen, waitFor, fireEvent, wait} from '@testing-library/react'
+import {act} from 'react-dom/test-utils'
 import App from './App'
 import {Dropdown} from './App'
 import {fetchShow as mockFetchShow} from './api/fetchShow'
+import userEvent from '@testing-library/user-event'
 
 
 jest.mock('./api/fetchShow')
@@ -604,9 +606,28 @@ const showData = {
 
 test('Select option from drop-down and display episodes', async () => {
 
-    render(<Dropdown />)
-    fireEvent.change(screen.getByTestId('select'), {
-        target: { value: 'Season 1' },
-    })
+  act(() => {
+    mockFetchShow.mockResolvedValueOnce(showData);
+  });
+  const { getByText } = render(<App />);
+  await wait(() => {
+    getByText(/Select a season/i);
+  });
+ 
+
+  const dropDown = getByText(/Select a season/i);
+
+  userEvent.click(dropDown)
+
+  const season = screen.getByText(/season 1/i)
+
+  expect(season).toBeInTheDocument()
+
+  userEvent.click(season)
+
+  const season1 = screen.getByText(/chapter one/i)
+
+  expect(season1).toBeInTheDocument()
+
 })   
     
