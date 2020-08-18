@@ -8,6 +8,8 @@ import { formatSeasons } from "./utils/formatSeasons";
 import Episodes from "./components/Episodes";
 import "./styles.css";
 
+import {fetchShow} from "./api/fetchShow"
+
 export default function App() {
   const [show, setShow] = useState(null);
   const [seasons, setSeasons] = useState([]);
@@ -15,17 +17,11 @@ export default function App() {
   const episodes = seasons[selectedSeason] || [];
 
   useEffect(() => {
-    const fetchShow = () => {
-      axios
-        .get(
-          "https://api.tvmaze.com/singlesearch/shows?q=stranger-things&embed=episodes"
-        )
-        .then(res => {
-          setShow(res.data);
-          setSeasons(formatSeasons(res.data._embedded.episodes));
-        });
-    };
-    fetchShow();
+    fetchShow()
+    .then(res => {
+      setShow(res.data);
+      setSeasons(formatSeasons(res.data._embedded.episodes));
+    });
   }, []);
 
   const handleSelect = e => {
@@ -39,9 +35,9 @@ export default function App() {
   return (
     <div className="App">
       <img className="poster-img" src={show.image.original} alt={show.name} />
-      <h1>{show.name}</h1>
+      <h1 data-testid="show-name">{show.name}</h1>
       {parse(show.summary)}
-      <Dropdown
+      <Dropdown 
         options={Object.keys(seasons)}
         onChange={handleSelect}
         value={selectedSeason || "Select a season"}
